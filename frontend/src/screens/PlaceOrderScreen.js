@@ -4,7 +4,7 @@ import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import CheckoutSteps from '../components/CheckoutSteps'
 import Message from '../components/Message'
-import { createOrder } from '../actions/orderActions'
+import { createOrder, orderDetails } from '../actions/orderActions'
 
 const PlaceOrderScreen = ({ history }) => {
     const cart = useSelector((state) => state.cart)
@@ -25,13 +25,14 @@ const PlaceOrderScreen = ({ history }) => {
     useEffect(() => {
         if(success){
             history.push(`/order/${order._id}`)
+            // dispatch(orderDetails(order._id))
         }
         // eslint-disable-next-line
     }, [history, success])
 
     const placeOrderHandler = () => {
         dispatch(createOrder({
-            orderItem: cart.cartItems,
+            orderItems: cart.cartItems,
             shippingAddress: cart.shippingAddress,
             paymentMethod: cart.paymentMethod,
             itemsPrice: cart.itemsPrice,
