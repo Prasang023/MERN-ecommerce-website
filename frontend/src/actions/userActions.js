@@ -214,7 +214,7 @@ export const updateUser = (user) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.delete(`/api/users/${user._id}`, config)
+        const { data } = await axios.put(`/api/users/${user._id}`, config)
 
         dispatch({ 
             type: USER_UPDATE_SUCCESS,
