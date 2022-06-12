@@ -1,12 +1,14 @@
+import axios from 'axios'
 import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listProductDetails } from '../actions/productAction'
+import { listProductDetails, updateProduct } from '../actions/productAction'
 import FormContainer from '../components/FormContainer'
 import { USER_UPDATE_RESET } from '../constants/userConstants'
+import { PRODUCT_UPDATE_RESET } from '../constants/productConstant'
 
 const ProductEditScreen = ({ match, history }) => {
     const productId = match.params.id
@@ -18,31 +20,71 @@ const ProductEditScreen = ({ match, history }) => {
     const [category, setCategory] = useState('')
     const [countInStock, setCountInStock] = useState(0)
     const [description, setDescription] = useState('')
+    const [uploading, setUploading] = useState(false)
 
     const dispatch = useDispatch()
 
     const productDetails = useSelector(state => state.productDetails)
     const { loading, error, product } = productDetails
 
+    const productUpdate = useSelector(state => state.productUpdate)
+    const { loading:loadingUpdate, error:errorUpdate, success:successUpdate } = productUpdate
+
     useEffect(() => {
-        
-            if(!product.name || product._id !== productId){
-                dispatch(listProductDetails(productId))
+            if(successUpdate){
+                dispatch({type: PRODUCT_UPDATE_RESET})
+                history.push('/admin/productlist')
             } else {
-                setName(product.name)
-                setPrice(product.price)
-                setImage(product.image)
-                setBrand(product.brand)
-                setCountInStock(product.countInStock)
-                setCategory(product.category)
-                setDescription(product.description)
+                if(!product.name || product._id !== productId){
+                    dispatch(listProductDetails(productId))
+                } else {
+                    setName(product.name)   
+                    setPrice(product.price)
+                    setImage(product.image)
+                    setBrand(product.brand)
+                    setCountInStock(product.countInStock)
+                    setCategory(product.category)
+                    setDescription(product.description)
+                }
             }
+            
         
-    }, [product, dispatch, productId, history])
+    }, [product, dispatch, productId, history, successUpdate])
+
+    const uploadFileHandler = async (e) => {
+        const file = e.target.files[0]
+        const formData = new FormData()
+        formData.append('image', file)
+        setUploading(true)
+
+        try {
+            const config = {
+                headers: { 
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+
+            const { data } = await axios.post('/api/upload', formData, config)
+            setImage(data)
+            setUploading(false)
+        } catch (error) {
+            console.log(error)
+            setUploading(true)
+        }
+    }
 
     const submitHandler = (e) => {
         e.preventDefault()
-        //UPDATE PRODUCT
+        dispatch(updateProduct({
+            _id: productId,
+            name,
+            price,
+            image,
+            brand,
+            category,
+            description,
+            countInStock,
+        }))
     }
 
     return (
@@ -50,8 +92,8 @@ const ProductEditScreen = ({ match, history }) => {
         <Link to='/admin/productlist' className='btn btn-light my-3'>Go Back</Link>
         <FormContainer>
             <h1>Edit Product</h1>
-            {/* {loadingUpdate && <Loader />}
-            {errorUpdate && <Message vaiant='danger'>{errorUpdate}</Message>} */}
+            {loadingUpdate && <Loader />}
+            {errorUpdate && <Message vaiant='danger'>{errorUpdate}</Message>}
             {loading? <Loader />: error? <Message vaiant='danger'>{error}</Message>:
             (<Form onSubmit={submitHandler}>
             <Form.Group controlId='name'>
@@ -78,10 +120,17 @@ const ProductEditScreen = ({ match, history }) => {
                     <Form.Label>Image</Form.Label>
                     <Form.Control 
                        type='text' 
-                       placeholder='Enter Image' 
+                       placeholder='Enter Image Url' 
                        value={image} 
                        onChange={(e) => setImage(e.target.value)}
                        ></Form.Control>
+                       <Form.File 
+                            id='image-file' 
+                            label='Choose File'
+                            custom
+                            onChange={uploadFileHandler}
+                        ></Form.File>
+                        {uploading && <Loader />} 
                 </Form.Group>
 
                 <Form.Group controlId='brand'>
