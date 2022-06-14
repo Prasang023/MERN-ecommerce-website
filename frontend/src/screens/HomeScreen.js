@@ -6,8 +6,9 @@ import Message from "../components/Message";
 import Loader from "../components/Loader";
 import {listProducts} from '../actions/productAction'
 
-const HomeScreen = () => {
-  console.log("Homescreen working")
+const HomeScreen = ({ match }) => {
+  // console.log("Homescreen working")
+  const keyword = match.params.keyword
 
   const dispatch = useDispatch()
   
@@ -15,8 +16,8 @@ const HomeScreen = () => {
   const { loading, error, products } = productList
 
   useEffect(() =>{
-    dispatch(listProducts())
-  }, [dispatch])
+    dispatch(listProducts(keyword))
+  }, [dispatch, keyword])
 
   return (
     <div>
