@@ -4,14 +4,16 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
+import Paginate from '../components/Paginate'
 import { listProducts, deleteProduct, createProduct } from '../actions/productAction'
 import { PRODUCT_CREATE_RESET } from '../constants/productConstant'
 
 const ProductListScreen = ({ history, match }) => {
-    const dispatch = useDispatch()
+  const dispatch = useDispatch()
+  const pageNumber = match.params.pageNumber
 
   const productList = useSelector((state) => state.productList)
-  const { loading, error, products } = productList
+  const { loading, error, products, pages, page } = productList
 
   const productDelete = useSelector((state) => state.productDelete)
   const { loading: loadingDelete, error:errorDelete, success:successDelete } = productDelete
@@ -23,17 +25,17 @@ const ProductListScreen = ({ history, match }) => {
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  // useEffect(() => {
-  //   dispatch({type: PRODUCT_CREATE_RESET})
-  //   if (!userInfo.isAdmin) {
-  //     history.push('/login')
-  //   }
-  //   if(successCreate) {
-  //     history.push(`/admin/product/${createdProduct._id}/edit`)
-  //   } else {
-  //     dispatch(listProducts())
-  //   }
-  // }, [dispatch, history, userInfo, successDelete, successCreate, createdProduct])
+  useEffect(() => {
+    dispatch({type: PRODUCT_CREATE_RESET})
+    if (!userInfo.isAdmin) {
+      history.push('/login')
+    }
+    if(successCreate) {
+      history.push(`/admin/product/${createdProduct._id}/edit`)
+    } else {
+      dispatch(listProducts('', pageNumber))
+    }
+  }, [dispatch, history, userInfo, successDelete, successCreate, createdProduct, pageNumber])
 
   const deleteHandler = (id) => {
     if (window.confirm('Are you sure')) {
@@ -65,6 +67,7 @@ const ProductListScreen = ({ history, match }) => {
         {
             loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> 
             : (
+              <>
                 <Table striped bordered hover responsive className='table-sm'>
           <thead>
             <tr>
@@ -102,6 +105,8 @@ const ProductListScreen = ({ history, match }) => {
             ))}
           </tbody>
         </Table>
+        <Paginate pages={pages} page={page} isAdmin={true} />
+        </>
             )
         }
     </>
