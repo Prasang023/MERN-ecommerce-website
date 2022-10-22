@@ -47,6 +47,13 @@ const logoutHandler = () => {
                   <i className="fas fa-user"></i>Login
                 </Nav.Link>
               </LinkContainer>}
+              <Nav className="ml-auto">
+              <LinkContainer to="/contact">
+                <Nav.Link>
+                  <i className="fas fa-address-book "></i>Contact Us
+                </Nav.Link>
+              </LinkContainer>
+            </Nav>
               {userInfo && userInfo.isAdmin && (
                 <NavDropdown title='Admin' id='adminmenu'>
                   <LinkContainer to="/admin/userlist">
@@ -64,6 +71,7 @@ const logoutHandler = () => {
                 </NavDropdown>
               )}
             </Nav>
+            
           </Navbar.Collapse>
         </Container>
       </Navbar>
