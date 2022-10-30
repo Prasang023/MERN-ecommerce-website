@@ -1,6 +1,6 @@
-
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import AboutUs from "./components/AboutUs";
 import { Container } from "react-bootstrap";
 import HomeScreen from "./screens/HomeScreen";
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -37,16 +37,28 @@ function App() {
           <Route path="/profile" component={ProfileScreen} />
           <Route path="/admin/userlist" component={UserListScreen} />
           <Route path="/admin/orderlist" component={OrderListScreen} />
-          <Route path="/admin/productlist" component={ProductListScreen} exact />
-          <Route path="/admin/productlist/:pageNumber" component={ProductListScreen} exact />
+          <Route
+            path="/admin/productlist"
+            component={ProductListScreen}
+            exact
+          />
+          <Route
+            path="/admin/productlist/:pageNumber"
+            component={ProductListScreen}
+            exact
+          />
           <Route path="/admin/user/:id/edit" component={UserEditScreen} />
           <Route path="/admin/product/:id/edit" component={ProductEditScreen} />
           <Route path="/" component={HomeScreen} exact />
           <Route path="/search/:keyword" component={HomeScreen} exact />
           <Route path="/page/:pageNumber" component={HomeScreen} exact />
-          <Route path="search/:keyword/page/:pageNumber" component={HomeScreen} exact />
-          <Route path="/contact" component={ContactScreen}/>
-          
+          <Route
+            path="search/:keyword/page/:pageNumber"
+            component={HomeScreen}
+            exact
+          />
+          <Route path="/contact" component={ContactScreen} />
+          <Route path="/about" component={AboutUs} />
         </Container>
       </main>
       <Footer />
